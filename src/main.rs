@@ -106,7 +106,7 @@ fn help() {
 }
 
 fn trumpify(file: String) {
-    let dirs: Vec<&str> = file.split("/").collect::<Vec<&str>>();
+    let dirs: Vec<&str> = file.split('/').collect::<Vec<&str>>();
     let mut name: String = String::from(dirs[dirs.len() - 1]);
     name = format!("{}{}",
                    &name[0..1].to_uppercase(),
