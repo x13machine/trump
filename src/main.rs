@@ -123,7 +123,7 @@ fn trumpify(file: String) {
 
     let loops = cmp::max(content.len() / text.len() / 2, 1);
     let mut rng = thread_rng();
-    for i in 0..loops {
+    for _ in 0..loops {
         let place: usize = rng.gen_range(0, content.len() as u32) as usize;
         let part1: String = String::from(&content[0..place]);
         let part2: String =
