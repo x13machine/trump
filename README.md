@@ -19,3 +19,6 @@ A command line utility written in rust that makes your files great again!
   
     trump -r <Directory>
 
+
+##IRC
+Talk to us on irc at irc.freenode.net on ##trumplinux or click this link https://kiwiirc.com/client/irc.freeenode.net/##trumplinux
