@@ -1,0 +1,8 @@
+[package]
+name = "trump"
+version = "0.1.0"
+authors = ["x13machine <brandanw2@gmail.com>"]
+
+[dependencies]
+rand = "0.3"
+walkdir = "0.1"
