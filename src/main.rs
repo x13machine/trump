@@ -58,20 +58,20 @@ fn get_path2(file: &str) -> Result<String, Error> {
 }
 
 fn get_path(file: &str) -> String {
-    get_path2(file).unwrap_or(file.to_string())
+    get_path2(file).unwrap_or(file.to_owned())
 }
 
 fn read_file2(file: &str) -> Result<String, Error> {
     let mut file = try!(File::open(file));
     let mut contents: Vec<u8> = Vec::new();
     try!(file.read_to_end(&mut contents));
-    let ret = String::from_utf8(contents).unwrap_or("".to_string());
+    let ret = String::from_utf8(contents).unwrap_or("".to_owned());
     Ok(ret)
 }
 
 
 fn read_file(file: &str) -> String {
-    read_file2(file).unwrap_or("".to_string())
+    read_file2(file).unwrap_or("".to_owned())
 }
 
 fn write_file2(file: &str, content: String) -> Result<bool, Error> {
