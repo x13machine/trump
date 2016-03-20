@@ -5,17 +5,17 @@ It makes your files great again!
 ## Commands:
 ###Help:
   
-  trump --help
+    trump --help
   
 ###Version:
   
-  trump -v
+    trump -v
   
 ###Files:
   
-  trump <File>
+    trump <File>
   
 ###Directories:
   
-  trump -r <Directory>
+    trump -r <Directory>
 
