@@ -61,29 +61,19 @@ fn get_path(file: &str) -> String {
     get_path2(file).unwrap_or(file.to_owned())
 }
 
-fn read_file2(file: &str) -> Result<String, Error> {
+fn read_file(file: &str) -> Result<String, Error> {
     let mut file = try!(File::open(file));
-    let mut contents: Vec<u8> = Vec::new();
-    try!(file.read_to_end(&mut contents));
-    let ret = String::from_utf8(contents).unwrap_or("".to_owned());
-    Ok(ret)
+    let mut contents = String::new();
+    try!(file.read_to_string(&mut contents));
+    Ok(contents)
 }
 
-
-fn read_file(file: &str) -> String {
-    read_file2(file).unwrap_or("".to_owned())
-}
-
-fn write_file2(file: &str, content: String) -> Result<bool, Error> {
+fn write_file(file: &str, content: String) -> Result<(), Error> {
     let mut f = try!(File::create(file));
     try!(f.write_all(content.as_bytes()));
 
     try!(f.sync_data());
-    Ok(false)
-}
-
-fn write_file(file: &str, content: String) {
-    write_file2(file, content).unwrap_or(false);
+    Ok(())
 }
 
 fn version() {
@@ -116,10 +106,10 @@ fn trumpify(file: String) {
 
     let text = format!("Make {} Great Again!", name);
 
-    let mut content: String = read_file(&file);
-    if content == "" {
-        return;
-    }
+    let mut content = match read_file(&file) {
+        Ok(content) => content,
+        Err(_) => return,
+    };
 
     let loops = cmp::max(content.len() / text.len() / 2, 1);
     let mut rng = thread_rng();
@@ -130,5 +120,5 @@ fn trumpify(file: String) {
             String::from(&content[cmp::min(place + text.len(), content.len())..content.len()]);
         content = format!("{}{}{}", part1, text, part2);
     }
-    write_file(&file, content);
+    let _ = write_file(&file, content);
 }
