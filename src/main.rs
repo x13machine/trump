@@ -54,11 +54,11 @@ fn main() {
 
 fn get_path2(file: &str) -> Result<String, Error> {
     let path = try!(fs::canonicalize(file));
-    return Ok(path.display().to_string());
+    Ok(path.display().to_string())
 }
 
 fn get_path(file: &str) -> String {
-    return get_path2(file).unwrap_or(file.to_string());
+    get_path2(file).unwrap_or(file.to_string())
 }
 
 fn read_file2(file: &str) -> Result<String, Error> {
@@ -66,12 +66,12 @@ fn read_file2(file: &str) -> Result<String, Error> {
     let mut contents: Vec<u8> = Vec::new();
     try!(file.read_to_end(&mut contents));
     let ret = String::from_utf8(contents).unwrap_or("".to_string());
-    return Ok(ret);
+    Ok(ret)
 }
 
 
 fn read_file(file: &str) -> String {
-    return read_file2(file).unwrap_or("".to_string());
+    read_file2(file).unwrap_or("".to_string())
 }
 
 fn write_file2(file: &str, content: String) -> Result<bool, Error> {
@@ -79,7 +79,7 @@ fn write_file2(file: &str, content: String) -> Result<bool, Error> {
     try!(f.write_all(content.as_bytes()));
 
     try!(f.sync_data());
-    return Ok(false);
+    Ok(false)
 }
 
 fn write_file(file: &str, content: String) {
