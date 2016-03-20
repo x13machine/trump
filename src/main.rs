@@ -13,14 +13,8 @@ use std::cmp;
 fn main() {
     let mut recursive: bool = false;
     let mut file: String = String::from("");
-    let mut i: i32 = -1;
 
-    for argument in env::args() {
-        i += 1;
-        if i == 0 {
-            continue;
-        }
-
+    for argument in env::args().skip(1) {
         if argument.to_lowercase() == "--help" || argument.to_lowercase() == "-help" {
             help();
             return;
