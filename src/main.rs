@@ -117,6 +117,9 @@ fn trumpify_bytes(data: &mut [u8], replace_with: &[u8]) {
 
     for _ in 0..loops {
         let offset = rng.gen_range(0, data.len());
-        data[offset..offset + replace_len].clone_from_slice(replace_with);
+        let to = cmp::min(offset + replace_len, data.len());
+        let mut slice = &mut data[offset..to];
+        let len = slice.len();
+        slice.clone_from_slice(&replace_with[..len]);
     }
 }
