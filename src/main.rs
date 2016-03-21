@@ -106,7 +106,10 @@ fn trumpify_file<P: AsRef<Path>>(path: P) {
 
     trumpify_bytes(&mut data, text.as_bytes());
 
-    let _ = file.seek(SeekFrom::Start(0));
+    if let Err(_) = file.seek(SeekFrom::Start(0)) {
+        return;
+    }
+
     let _ = file.write_all(&data);
 }
 
