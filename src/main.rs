@@ -4,11 +4,11 @@ extern crate walkdir;
 use walkdir::WalkDir;
 use rand::{Rng, thread_rng};
 use std::env;
-use std::fs::File;
-use std::fs;
+use std::fs::{self, OpenOptions};
 use std::io::prelude::*;
-use std::io::Error;
+use std::io::{Error, SeekFrom};
 use std::cmp;
+use std::path::Path;
 
 fn main() {
     let mut recursive: bool = false;
@@ -39,10 +39,10 @@ fn main() {
     if recursive {
         for entry in WalkDir::new(file) {
             let entry = entry.unwrap();
-            trumpify(entry.path().display().to_string());
+            trumpify_file(entry.path());
         }
     } else {
-        trumpify(file)
+        trumpify_file(file)
     }
 }
 
@@ -53,21 +53,6 @@ fn get_path2(file: &str) -> Result<String, Error> {
 
 fn get_path(file: &str) -> String {
     get_path2(file).unwrap_or(file.to_owned())
-}
-
-fn read_file(file: &str) -> Result<String, Error> {
-    let mut file = try!(File::open(file));
-    let mut contents = String::new();
-    try!(file.read_to_string(&mut contents));
-    Ok(contents)
-}
-
-fn write_file(file: &str, content: String) -> Result<(), Error> {
-    let mut f = try!(File::create(file));
-    try!(f.write_all(content.as_bytes()));
-
-    try!(f.sync_data());
-    Ok(())
 }
 
 fn version() {
@@ -89,32 +74,49 @@ fn help() {
     println!("\x1b[0m    trump -r <Directory>");
 }
 
-fn trumpify(file: String) {
-    let dirs: Vec<&str> = file.split('/').collect::<Vec<&str>>();
-    let mut name: String = String::from(dirs[dirs.len() - 1]);
-    name = format!("{}{}",
-                   &name[0..1].to_uppercase(),
-                   &name[1..name.len()].to_lowercase());
+fn trumpify_file<P: AsRef<Path>>(path: P) {
+    let path = path.as_ref();
+
+    let name = match path.file_name() {
+        Some(name) => name.to_string_lossy(),
+        None => return,
+    };
+    let capitalized_name = format!("{}{}",
+                                   &name[0..1].to_uppercase(),
+                                   &name[1..name.len()].to_lowercase());
     // Ansi Color Codes!!!
-    println!("\x1b[32mMaking Great Again:\x1b[0m {}", file);
+    println!("\x1b[32mMaking Great Again:\x1b[0m {:?}", path);
 
-    let text = format!("Make {} Great Again!", name);
+    let text = format!("Make {} Great Again!", capitalized_name);
 
-    let mut content = match read_file(&file) {
-        Ok(ref content) if content.is_empty() => return,
-        Ok(content) => content,
+    let mut file = match OpenOptions::new().read(true).write(true).open(path) {
+        Ok(file) => file,
         Err(_) => return,
     };
 
-    let loops = cmp::max(content.len() / text.len() / 2, 1);
-    let mut rng = thread_rng();
-    for _ in 0..loops {
-        content = {
-            let place = rng.gen_range(0, content.len());
-            let part_1 = &content[0..place];
-            let part_2 = &content[cmp::min(place + text.len(), content.len())..content.len()];
-            format!("{}{}{}", part_1, text, part_2)
-        };
+    let mut data = Vec::new();
+
+    if let Err(_) = file.read_to_end(&mut data) {
+        return;
     }
-    let _ = write_file(&file, content);
+
+    if data.is_empty() {
+        return;
+    }
+
+    trumpify_bytes(&mut data, text.as_bytes());
+
+    let _ = file.seek(SeekFrom::Start(0));
+    let _ = file.write_all(&data);
+}
+
+fn trumpify_bytes(data: &mut [u8], replace_with: &[u8]) {
+    let replace_len = replace_with.len();
+    let loops = cmp::max(data.len() / replace_len / 2, 1);
+    let mut rng = thread_rng();
+
+    for _ in 0..loops {
+        let offset = rng.gen_range(0, data.len());
+        data[offset..offset + replace_len].clone_from_slice(replace_with);
+    }
 }
