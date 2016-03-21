@@ -101,13 +101,11 @@ fn trumpify(file: String) {
     let text = format!("Make {} Great Again!", name);
 
     let mut content = match read_file(&file) {
+        Ok(ref content) if content.is_empty() => return,
         Ok(content) => content,
         Err(_) => return,
     };
-    if content == ""{
-        return ;
-    }
-    
+
     let loops = cmp::max(content.len() / text.len() / 2, 1);
     let mut rng = thread_rng();
     for _ in 0..loops {
