@@ -106,7 +106,10 @@ fn trumpify_file<P: AsRef<Path>>(path: P) {
 
     trumpify_bytes(&mut data, text.as_bytes());
 
-    let _ = file.seek(SeekFrom::Start(0));
+    if let Err(_) = file.seek(SeekFrom::Start(0)) {
+        return;
+    }
+
     let _ = file.write_all(&data);
 }
 
@@ -117,6 +120,9 @@ fn trumpify_bytes(data: &mut [u8], replace_with: &[u8]) {
 
     for _ in 0..loops {
         let offset = rng.gen_range(0, data.len());
-        data[offset..offset + replace_len].clone_from_slice(replace_with);
+        let to = cmp::min(offset + replace_len, data.len());
+        let mut slice = &mut data[offset..to];
+        let len = slice.len();
+        slice.clone_from_slice(&replace_with[..len]);
     }
 }
