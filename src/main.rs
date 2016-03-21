@@ -104,7 +104,10 @@ fn trumpify(file: String) {
         Ok(content) => content,
         Err(_) => return,
     };
-
+    if content == ""{
+        return ;
+    }
+    
     let loops = cmp::max(content.len() / text.len() / 2, 1);
     let mut rng = thread_rng();
     for _ in 0..loops {
