@@ -109,11 +109,12 @@ fn trumpify(file: String) {
     let loops = cmp::max(content.len() / text.len() / 2, 1);
     let mut rng = thread_rng();
     for _ in 0..loops {
-        let place = rng.gen_range(0, content.len());
-        let part1: String = String::from(&content[0..place]);
-        let part2: String =
-            String::from(&content[cmp::min(place + text.len(), content.len())..content.len()]);
-        content = format!("{}{}{}", part1, text, part2);
+        content = {
+            let place = rng.gen_range(0, content.len());
+            let part_1 = &content[0..place];
+            let part_2 = &content[cmp::min(place + text.len(), content.len())..content.len()];
+            format!("{}{}{}", part_1, text, part_2)
+        };
     }
     let _ = write_file(&file, content);
 }
